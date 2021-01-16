@@ -17,7 +17,9 @@
 
 // Author: Prof. Jyotiprakash Mishra
 // Assistant Professor (II)
-// KIIT DU
+// Kalinga Institute of Industrial Technology, Deemed to be University
+// Copyright (c) 2021 Jyotiprakash Mishra
+
 
 typedef struct
 {
