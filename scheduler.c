@@ -19,8 +19,7 @@
 // Kalinga Institute of Industrial Technology, Deemed to be University
 // Copyright (c) 2021 Jyotiprakash Mishra
 
-typedef struct
-{
+typedef struct {
     int process_order;              // order of process arrival. lower numbers mean earlier arrival. must be unique.
     int process_arrival_time;       // arrival time
     int process_priority;           // priority. lower numbers mean higher priority. must be unique.
@@ -32,18 +31,18 @@ typedef struct
     int has_terminated;             // used to track if a process has terminated.
     int time_slice_left;            // used by the round-robin scheduler for tracking how many quanta of time is left for the current slice
     int process_number;             // used to store the process number, just in case we need to sort the process list by some criterion and need to
-                                    // track back to the original process numbers
+    // track back to the original process numbers
 } pinfo;
 
-pinfo** allocate_mem_for_process_list(int length) {
-    pinfo** pinfos = malloc(sizeof(pinfo *) * length);
+pinfo **allocate_mem_for_process_list(int length) {
+    pinfo **pinfos = malloc(sizeof(pinfo *) * length);
     for (int i = 0; i < length; ++i) {
-        pinfos[i] = (pinfo *)malloc(sizeof(pinfo));
+        pinfos[i] = (pinfo *) malloc(sizeof(pinfo));
     }
     return pinfos;
 }
 
-void deallocate_mem_for_process_list(pinfo** pinfos, int length, int only_outer) {
+void deallocate_mem_for_process_list(pinfo **pinfos, int length, int only_outer) {
     if (!only_outer) {
         for (int i = 0; i < length; ++i) {
             free(pinfos[i]);
@@ -52,11 +51,11 @@ void deallocate_mem_for_process_list(pinfo** pinfos, int length, int only_outer)
     free(pinfos);
 }
 
-void take_input(pinfo*** pinfos_out, int* pinfos_len, int* algorithm, int* preemptive, int* quantum) {
+void take_input(pinfo ***pinfos_out, int *pinfos_len, int *algorithm, int *preemptive, int *quantum) {
     int nprocs;
     char algo[5];
     char preempt[4];
-    pinfo** pinfos = NULL;
+    pinfo **pinfos = NULL;
 
     printf("Enter the algorithm (fcfs, sjf, pri, rr): ");
     scanf("%s", algo);
@@ -132,7 +131,7 @@ void take_input(pinfo*** pinfos_out, int* pinfos_len, int* algorithm, int* preem
     printf("\n");
 }
 
-void display_output(pinfo** pinfos, int pinfos_len, int context_switches) {
+void display_output(pinfo **pinfos, int pinfos_len, int context_switches) {
     printf("\n");
     for (int i = 0; i < pinfos_len; ++i) {
         printf("\nP%d response time: %d\n", i, pinfos[i]->response_time);
@@ -142,23 +141,23 @@ void display_output(pinfo** pinfos, int pinfos_len, int context_switches) {
     printf("\nNumber of Context Switches: %d\n", context_switches);
 }
 
-int has_process_arrived(pinfo** pinfos, int process, int time) {
+int has_process_arrived(pinfo **pinfos, int process, int time) {
     if (process == NO_PROCESS)
         return 1;
     return pinfos[process]->process_arrival_time <= time;
 }
 
-int has_process_finished(pinfo** pinfos, int process) {
+int has_process_finished(pinfo **pinfos, int process) {
     if (process == NO_PROCESS)
         return 1;
     return pinfos[process]->has_terminated;
 }
 
-int is_process_available_to_run(pinfo** pinfos, int process, int time) {
+int is_process_available_to_run(pinfo **pinfos, int process, int time) {
     return has_process_arrived(pinfos, process, time) && !has_process_finished(pinfos, process);
 }
 
-int next_unfinished_arrived_process_by_order(pinfo** pinfos, int pinfos_len, int current_process, int time) {
+int next_unfinished_arrived_process_by_order(pinfo **pinfos, int pinfos_len, int current_process, int time) {
     int processes_checked = 0;
     int min_order = MAX_ORDER_OR_PRIORITY;
     int min_process = NO_PROCESS;
@@ -174,7 +173,7 @@ int next_unfinished_arrived_process_by_order(pinfo** pinfos, int pinfos_len, int
     return min_process;
 }
 
-int next_unfinished_arrived_process_by_priority(pinfo** pinfos, int pinfos_len, int current_process, int time) {
+int next_unfinished_arrived_process_by_priority(pinfo **pinfos, int pinfos_len, int current_process, int time) {
     int processes_checked = 0;
     int min_priority = MAX_ORDER_OR_PRIORITY;
     int min_process = NO_PROCESS;
@@ -190,7 +189,8 @@ int next_unfinished_arrived_process_by_priority(pinfo** pinfos, int pinfos_len, 
     return min_process;
 }
 
-int next_unfinished_arrived_process_by_shortest_time_remaining(pinfo** pinfos, int pinfos_len, int current_process, int time) {
+int next_unfinished_arrived_process_by_shortest_time_remaining(pinfo **pinfos, int pinfos_len, int current_process,
+                                                               int time) {
     int processes_checked = 0;
     int min_process_time = MAX_BURST_TIME;
     int min_process = NO_PROCESS;
@@ -206,7 +206,7 @@ int next_unfinished_arrived_process_by_shortest_time_remaining(pinfo** pinfos, i
     return min_process;
 }
 
-int next_unfinished_arrived_process_by_order_for_rr(pinfo** pinfos, int pinfos_len, int current_process, int time) {
+int next_unfinished_arrived_process_by_order_for_rr(pinfo **pinfos, int pinfos_len, int current_process, int time) {
     int processes_checked = 0;
     while (processes_checked < pinfos_len) {
         current_process = (current_process + 1) % pinfos_len;
@@ -217,47 +217,48 @@ int next_unfinished_arrived_process_by_order_for_rr(pinfo** pinfos, int pinfos_l
     return NO_PROCESS;
 }
 
-int order_comparator(const void *x, const void *y)
-{
-    pinfo *x_ptr = *(pinfo**)x;
-    pinfo *y_ptr = *(pinfo**)y;
+int order_comparator(const void *x, const void *y) {
+    pinfo *x_ptr = *(pinfo **) x;
+    pinfo *y_ptr = *(pinfo **) y;
     int x_order = x_ptr->process_order;
     int y_order = y_ptr->process_order;
     return (x_order - y_order);
 }
 
-void sort_by_order(pinfo** pinfos, int pinfos_len) {
-    qsort((void**)pinfos, pinfos_len, sizeof(pinfo*), order_comparator);
+void sort_by_order(pinfo **pinfos, int pinfos_len) {
+    qsort((void **) pinfos, pinfos_len, sizeof(pinfo *), order_comparator);
 }
 
-int fcfs(int last_process_running, pinfo** pinfos, int pinfos_len, int time) {
+int fcfs(int last_process_running, pinfo **pinfos, int pinfos_len, int time) {
     if (!has_process_finished(pinfos, last_process_running))
         return last_process_running;
     else return next_unfinished_arrived_process_by_order(pinfos, pinfos_len, last_process_running, time);
 }
 
-int sjf_nonpreempt(int last_process_running, pinfo** pinfos, int pinfos_len, int time) {
+int sjf_nonpreempt(int last_process_running, pinfo **pinfos, int pinfos_len, int time) {
     if (!has_process_finished(pinfos, last_process_running))
         return last_process_running;
-    else return next_unfinished_arrived_process_by_shortest_time_remaining(pinfos, pinfos_len, last_process_running, time);
+    else
+        return next_unfinished_arrived_process_by_shortest_time_remaining(pinfos, pinfos_len, last_process_running,
+                                                                          time);
 }
 
-int sjf_preempt(int last_process_running, pinfo** pinfos, int pinfos_len, int time) {
+int sjf_preempt(int last_process_running, pinfo **pinfos, int pinfos_len, int time) {
     return next_unfinished_arrived_process_by_shortest_time_remaining(pinfos, pinfos_len, last_process_running, time);
 }
 
-int pri_nonpreempt(int last_process_running, pinfo** pinfos, int pinfos_len, int time) {
+int pri_nonpreempt(int last_process_running, pinfo **pinfos, int pinfos_len, int time) {
     if (!has_process_finished(pinfos, last_process_running))
         return last_process_running;
     else return next_unfinished_arrived_process_by_priority(pinfos, pinfos_len, last_process_running, time);
 }
 
-int pri_preempt(int last_process_running, pinfo** pinfos, int pinfos_len, int time) {
+int pri_preempt(int last_process_running, pinfo **pinfos, int pinfos_len, int time) {
     return next_unfinished_arrived_process_by_priority(pinfos, pinfos_len, last_process_running, time);
 }
 
-int rr(int last_process_running, pinfo** pinfos, int pinfos_len, int quantum, int time, int* context_switches) {
-    pinfo** sorted_pinfos = allocate_mem_for_process_list(pinfos_len);
+int rr(int last_process_running, pinfo **pinfos, int pinfos_len, int quantum, int time, int *context_switches) {
+    pinfo **sorted_pinfos = allocate_mem_for_process_list(pinfos_len);
     for (int i = 0; i < pinfos_len; ++i)
         sorted_pinfos[i] = pinfos[i];
     sort_by_order(sorted_pinfos, pinfos_len);
@@ -286,17 +287,17 @@ int rr(int last_process_running, pinfo** pinfos, int pinfos_len, int quantum, in
         }
     }
 
-    int to_return = next_unfinished_arrived_process_by_order_for_rr(sorted_pinfos, pinfos_len, last_process_running_in_sorted_pinfos, time);
+    int to_return = next_unfinished_arrived_process_by_order_for_rr(sorted_pinfos, pinfos_len,
+                                                                    last_process_running_in_sorted_pinfos, time);
 
-    if (to_return == NO_PROCESS){
+    if (to_return == NO_PROCESS) {
         if (!(last_process_running == NO_PROCESS || pinfos[last_process_running]->time_slice_left == quantum)) {
             ++*context_switches;
             printf("Context switch transfer from a concrete process to NO PROCESS\n");
         }
         deallocate_mem_for_process_list(sorted_pinfos, pinfos_len, 1);
         return to_return;
-    }
-    else {
+    } else {
         to_return = sorted_pinfos[to_return]->process_number;
         if (last_process_running == NO_PROCESS) {
             ++*context_switches;
@@ -307,7 +308,9 @@ int rr(int last_process_running, pinfo** pinfos, int pinfos_len, int quantum, in
     }
 }
 
-int next_process_to_run(int last_process_running, pinfo** pinfos, int pinfos_len, int algorithm, int preemptive, int time, int quantum, int* context_switches) {
+int
+next_process_to_run(int last_process_running, pinfo **pinfos, int pinfos_len, int algorithm, int preemptive, int time,
+                    int quantum, int *context_switches) {
     switch (algorithm) {
         case FCFS_SCHED:
             return fcfs(last_process_running, pinfos, pinfos_len, time);
@@ -336,7 +339,7 @@ int next_process_to_run(int last_process_running, pinfo** pinfos, int pinfos_len
     }
 }
 
-void run_process_and_update_structs(int process_to_run, pinfo** pinfos, int pinfos_len, int* time) {
+void run_process_and_update_structs(int process_to_run, pinfo **pinfos, int pinfos_len, int *time) {
     if (process_to_run != NO_PROCESS) {
         --pinfos[process_to_run]->how_much_left;
         pinfos[process_to_run]->has_run_at_least_once = 1;
@@ -361,7 +364,7 @@ void run_process_and_update_structs(int process_to_run, pinfo** pinfos, int pinf
     ++*time;
 }
 
-int all_processes_have_finished(pinfo** pinfos, int pinfos_len) {
+int all_processes_have_finished(pinfo **pinfos, int pinfos_len) {
     for (int i = 0; i < pinfos_len; ++i) {
         if (!pinfos[i]->has_terminated)
             return 0;
@@ -377,14 +380,16 @@ int main() {
 
     while (!all_processes_have_finished(pinfos, pinfos_len)) {
         previous_process = next_process;
-        next_process = next_process_to_run(next_process, pinfos, pinfos_len, algorithm, preemptive, time, quantum, &context_switches);
-        if (next_process == NO_PROCESS && previous_process != NO_PROCESS && algorithm != RR_SCHED){
+        next_process = next_process_to_run(next_process, pinfos, pinfos_len, algorithm, preemptive, time, quantum,
+                                           &context_switches);
+        if (next_process == NO_PROCESS && previous_process != NO_PROCESS && algorithm != RR_SCHED) {
             printf("Context switch from a concrete process to NO PROCESS\n");
             ++context_switches;
-        } else if (next_process != NO_PROCESS && previous_process == NO_PROCESS && algorithm != RR_SCHED){
+        } else if (next_process != NO_PROCESS && previous_process == NO_PROCESS && algorithm != RR_SCHED) {
             printf("Context switch from NO PROCESS to a concrete process\n");
             ++context_switches;
-        } else if (next_process != NO_PROCESS && previous_process != NO_PROCESS && next_process != previous_process && algorithm != RR_SCHED){
+        } else if (next_process != NO_PROCESS && previous_process != NO_PROCESS && next_process != previous_process &&
+                   algorithm != RR_SCHED) {
             printf("Context switch from one process to another\n");
             ++context_switches;
         }
