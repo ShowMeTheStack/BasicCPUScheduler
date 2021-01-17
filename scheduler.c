@@ -291,10 +291,6 @@ int rr(int last_process_running, pinfo **pinfos, int pinfos_len, int quantum, in
                                                                     last_process_running_in_sorted_pinfos, time);
 
     if (to_return == NO_PROCESS) {
-        if (!(last_process_running == NO_PROCESS || pinfos[last_process_running]->time_slice_left == quantum)) {
-            ++*context_switches;
-            printf("Context switch transfer from a concrete process to NO PROCESS\n");
-        }
         deallocate_mem_for_process_list(sorted_pinfos, pinfos_len, 1);
         return to_return;
     } else {
