@@ -274,7 +274,7 @@ int rr(int last_process_running, pinfo** pinfos, int pinfos_len, int quantum, in
             }
         } else if (pinfos[last_process_running]->time_slice_left) {
             ++*context_switches;
-            printf("Context switch after time slice expired\n");
+            printf("Context switch after process finished but time slice still left\n");
         }
     }
 
