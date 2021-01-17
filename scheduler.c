@@ -263,11 +263,16 @@ int rr(int last_process_running, pinfo** pinfos, int pinfos_len, int quantum, in
     sort_by_order(sorted_pinfos, pinfos_len);
 
     if (last_process_running != NO_PROCESS) {
-        if (--pinfos[last_process_running]->time_slice_left) {
-            deallocate_mem_for_process_list(sorted_pinfos, pinfos_len, 1);
-            return last_process_running;
-        } else {
-            pinfos[last_process_running]->time_slice_left = quantum;
+        if (is_process_available_to_run(pinfos, last_process_running, time)) {
+            if (--pinfos[last_process_running]->time_slice_left) {
+                deallocate_mem_for_process_list(sorted_pinfos, pinfos_len, 1);
+                return last_process_running;
+            } else {
+                pinfos[last_process_running]->time_slice_left = quantum;
+                ++*context_switches;
+                printf("Context switch after time slice expired\n");
+            }
+        } else if (pinfos[last_process_running]->time_slice_left) {
             ++*context_switches;
             printf("Context switch after time slice expired\n");
         }
