@@ -34,10 +34,12 @@ typedef struct {
     // track back to the original process numbers
 } pinfo;
 
-pinfo **allocate_mem_for_process_list(int length) {
+pinfo **allocate_mem_for_process_list(int length, int only_outer) {
     pinfo **pinfos = malloc(sizeof(pinfo *) * length);
-    for (int i = 0; i < length; ++i) {
-        pinfos[i] = (pinfo *) malloc(sizeof(pinfo));
+    if (!only_outer) {
+        for (int i = 0; i < length; ++i) {
+            pinfos[i] = (pinfo *) malloc(sizeof(pinfo));
+        }
     }
     return pinfos;
 }
@@ -92,7 +94,7 @@ void take_input(pinfo ***pinfos_out, int *pinfos_len, int *algorithm, int *preem
     scanf("%d", &nprocs);
     *pinfos_len = nprocs;
 
-    pinfos = allocate_mem_for_process_list(nprocs);
+    pinfos = allocate_mem_for_process_list(nprocs, 0);
 
     for (int i = 0; i < nprocs; ++i) {
         printf("\n");
@@ -258,7 +260,7 @@ int pri_preempt(int last_process_running, pinfo **pinfos, int pinfos_len, int ti
 }
 
 int rr(int last_process_running, pinfo **pinfos, int pinfos_len, int quantum, int time, int *context_switches) {
-    pinfo **sorted_pinfos = allocate_mem_for_process_list(pinfos_len);
+    pinfo **sorted_pinfos = allocate_mem_for_process_list(pinfos_len, 1);
     for (int i = 0; i < pinfos_len; ++i)
         sorted_pinfos[i] = pinfos[i];
     sort_by_order(sorted_pinfos, pinfos_len);
