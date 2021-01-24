@@ -281,7 +281,7 @@ int rr(int last_process_running, pinfo **pinfos, int pinfos_len, int quantum, in
         }
     }
 
-    int last_process_running_in_sorted_pinfos = 0;
+    int last_process_running_in_sorted_pinfos = -1;
     for (int i = 0; i < pinfos_len; ++i) {
         if (sorted_pinfos[i]->process_number == last_process_running) {
             last_process_running_in_sorted_pinfos = i;
